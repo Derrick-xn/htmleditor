@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>jsMind 思维导图演示</title>
-    <link rel="stylesheet" href="lib/jsmind/jsmind.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsmind@0.4.6/style/jsmind.css">
     <style>
         body {
             font-family: 'Microsoft YaHei', Arial, sans-serif;
@@ -62,8 +62,11 @@
         <div class="controls">
             <button id="add-node">添加子节点</button>
             <button id="remove-node">删除选中节点</button>
+            <button id="add-sibling">添加同级节点</button>
             <button id="expand-all">全部展开</button>
             <button id="collapse-all">全部收起</button>
+            <button id="export-json">导出JSON</button>
+            <button id="import-json">导入JSON</button>
             <select id="theme-select" class="theme-select">
                 <option value="primary">默认主题</option>
                 <option value="warning">警告主题</option>
@@ -71,13 +74,13 @@
                 <option value="success">成功主题</option>
                 <option value="info">信息主题</option>
             </select>
+            <input type="file" id="import-file" accept="application/json" style="display:none" />
         </div>
         
         <div id="jsmind_container"></div>
     </div>
 
-    <script src="lib/jsmind/jsmind.min.js"></script>
-    <script src="lib/jsmind/jsmind.draggable.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsmind@0.4.6/js/jsmind.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // 初始数据
@@ -137,18 +140,32 @@
             // 初始化思维导图
             var jm = new jsMind(options);
             jm.show(mind_data);
+            // 默认选中根节点，避免用户未选中导致添加无效
+            jm.select_node('root');
 
             // 添加子节点
             document.getElementById('add-node').addEventListener('click', function() {
+                var selected_node = jm.get_selected_node() || jm.get_node('root');
+                var node_id = 'node_' + (new Date().getTime());
+                var node_topic = '新节点 ' + node_id.substr(-6);
+                jm.add_node(selected_node, node_id, node_topic);
+            });
+
+            // 添加同级节点
+            document.getElementById('add-sibling').addEventListener('click', function() {
                 var selected_node = jm.get_selected_node();
                 if (!selected_node) {
                     alert('请先选择一个节点');
                     return;
                 }
-                
+                if (selected_node.isroot) {
+                    alert('根节点不能添加同级节点');
+                    return;
+                }
+                var parent_node = selected_node.parent;
                 var node_id = 'node_' + (new Date().getTime());
-                var node_topic = '新节点 ' + node_id.substr(-6);
-                jm.add_node(selected_node, node_id, node_topic);
+                var node_topic = '同级节点 ' + node_id.substr(-6);
+                jm.add_node(parent_node, node_id, node_topic);
             });
 
             // 删除选中节点
@@ -181,6 +198,48 @@
             document.getElementById('theme-select').addEventListener('change', function() {
                 var theme = this.value;
                 jm.set_theme(theme);
+            });
+
+            // 导出 JSON（下载）
+            document.getElementById('export-json').addEventListener('click', function() {
+                try {
+                    var data = jm.get_data('node_array');
+                    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'mindmap.json';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                } catch (e) {
+                    alert('导出失败：' + (e && e.message ? e.message : e));
+                }
+            });
+
+            // 触发选择文件
+            document.getElementById('import-json').addEventListener('click', function() {
+                document.getElementById('import-file').click();
+            });
+
+            // 导入 JSON（从文件）
+            document.getElementById('import-file').addEventListener('change', function(ev) {
+                var file = ev.target.files && ev.target.files[0];
+                if (!file) return;
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        var text = e.target.result;
+                        var json = JSON.parse(text);
+                        jm.show(json);
+                    } catch (err) {
+                        alert('JSON 解析失败：' + (err && err.message ? err.message : err));
+                    } finally {
+                        ev.target.value = '';
+                    }
+                };
+                reader.readAsText(file, 'utf-8');
             });
         });
     </script>
