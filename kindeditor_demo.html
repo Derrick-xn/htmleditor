@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KindEditor 演示</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .description {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .editor-container {
+            margin-top: 20px;
+        }
+        .preview {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .preview h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>KindEditor 富文本编辑器演示</h1>
+        <p class="description">轻量级所见即所得HTML编辑器</p>
+        
+        <div class="controls">
+            <button id="get-html">获取HTML</button>
+            <button id="get-text">获取纯文本</button>
+            <button id="insert-html">插入HTML</button>
+            <button id="sync">同步到textarea</button>
+            <button id="reset">重置编辑器</button>
+        </div>
+        
+        <div class="editor-container">
+            <textarea id="content" name="content" style="width:100%;height:400px;">
+                <h3>KindEditor 功能特点</h3>
+                <ul>
+                    <li>轻量级，仅861KB (压缩后约404KB)</li>
+                    <li>使用简单，功能强大</li>
+                    <li>兼容多种浏览器</li>
+                    <li>支持图片上传、Flash、视频、音乐等媒体文件</li>
+                    <li>支持表格、特殊字符、本地图片上传功能</li>
+                </ul>
+                <p><img src="https://via.placeholder.com/500x200/09f/fff.png" alt="示例图片" style="max-width: 100%;" /></p>
+                <h3>代码示例</h3>
+                <pre>
+function example() {
+    console.log("这是一个代码示例");
+    return true;
+}
+                </pre>
+                <p>这是一个<strong>加粗文本</strong>和<em>斜体文本</em>示例。</p>
+                <p><a href="https://kindeditor.net" target="_blank">访问KindEditor官网</a></p>
+                <table style="width:100%;" border="1" cellspacing="0" cellpadding="5">
+                    <tr>
+                        <th>功能</th>
+                        <th>说明</th>
+                    </tr>
+                    <tr>
+                        <td>文本格式化</td>
+                        <td>支持字体、大小、颜色、对齐等基本格式</td>
+                    </tr>
+                    <tr>
+                        <td>插入功能</td>
+                        <td>支持图片、表格、超链接等元素</td>
+                    </tr>
+                    <tr>
+                        <td>视图切换</td>
+                        <td>可在设计视图和代码视图之间切换</td>
+                    </tr>
+                </table>
+            </textarea>
+        </div>
+        
+        <div class="preview" id="preview-container" style="display:none;">
+            <h3>编辑器内容预览</h3>
+            <div id="preview-content"></div>
+        </div>
+    </div>
+
+    <!-- 引入KindEditor -->
+    <script src="https://cdn.jsdelivr.net/npm/kindeditor@4.1.12/kindeditor-all-min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/kindeditor@4.1.12/lang/zh-CN.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // KindEditor配置
+            var options = {
+                cssPath : 'https://cdn.jsdelivr.net/npm/kindeditor@4.1.12/plugins/code/prettify.css',
+                allowPreviewEmoticons : true,
+                allowImageUpload : false,
+                items : [
+                    'source', '|', 'undo', 'redo', '|', 'preview', 'print', 'template', 'code', 'cut', 'copy', 'paste',
+                    'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
+                    'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+                    'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
+                    'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+                    'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'multiimage',
+                    'flash', 'media', 'insertfile', 'table', 'hr', 'emoticons', 'baidumap', 'pagebreak',
+                    'anchor', 'link', 'unlink'
+                ],
+                afterCreate : function() {
+                    var self = this;
+                    // 添加自定义按钮
+                    KindEditor.ctrl(document, 13, function() {
+                        self.sync();
+                        alert('内容已同步到textarea');
+                    });
+                },
+                afterChange : function() {
+                    // 编辑器内容变化时触发
+                    this.sync();
+                }
+            };
+            
+            // 初始化编辑器
+            var editor = KindEditor.create('#content', options);
+            
+            // 获取HTML按钮
+            document.getElementById('get-html').addEventListener('click', function() {
+                var html = editor.html();
+                document.getElementById('preview-container').style.display = 'block';
+                document.getElementById('preview-content').innerHTML = html;
+                alert('HTML已显示在预览区域');
+            });
+            
+            // 获取纯文本按钮
+            document.getElementById('get-text').addEventListener('click', function() {
+                var text = editor.text();
+                document.getElementById('preview-container').style.display = 'block';
+                document.getElementById('preview-content').innerText = text;
+                alert('纯文本已显示在预览区域');
+            });
+            
+            // 插入HTML按钮
+            document.getElementById('insert-html').addEventListener('click', function() {
+                var html = '<p style="color:red;">这是插入的<strong>HTML</strong>内容</p>';
+                editor.insertHtml(html);
+            });
+            
+            // 同步到textarea按钮
+            document.getElementById('sync').addEventListener('click', function() {
+                editor.sync();
+                alert('内容已同步到textarea');
+            });
+            
+            // 重置编辑器按钮
+            document.getElementById('reset').addEventListener('click', function() {
+                editor.html('');
+            });
+        });
+    </script>
+</body>
+</html> 

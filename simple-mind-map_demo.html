@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Mind Map 思维导图演示</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .select-control {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        #mindmap-container {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ccc;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Simple Mind Map 思维导图演示</h1>
+        
+        <div class="controls">
+            <button id="add-child">添加子节点</button>
+            <button id="add-sibling">添加同级节点</button>
+            <button id="remove-node">删除节点</button>
+            <select id="theme-select" class="select-control">
+                <option value="default">默认主题</option>
+                <option value="classic">经典主题</option>
+                <option value="minions">小黄人主题</option>
+                <option value="classic2">经典2主题</option>
+                <option value="classic3">经典3主题</option>
+                <option value="classic4">经典4主题</option>
+                <option value="dark">暗黑主题</option>
+                <option value="light">明亮主题</option>
+            </select>
+            <select id="layout-select" class="select-control">
+                <option value="logicalStructure">逻辑结构图</option>
+                <option value="mindMap">思维导图</option>
+                <option value="organizationStructure">组织结构图</option>
+                <option value="catalogOrganization">目录组织图</option>
+                <option value="timeline">时间轴</option>
+                <option value="fishbone">鱼骨图</option>
+            </select>
+            <button id="export-img">导出PNG</button>
+            <button id="export-svg">导出SVG</button>
+        </div>
+        
+        <div id="mindmap-container"></div>
+    </div>
+
+    <!-- 引入Simple Mind Map库 -->
+    <script src="https://cdn.jsdelivr.net/npm/simple-mind-map@0.6.11/dist/simpleMindMap.umd.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化思维导图
+            const mindMap = new MindMap({
+                el: document.getElementById('mindmap-container'),
+                theme: {
+                    name: 'default'
+                },
+                themeConfig: {
+                    lineWidth: 2,
+                    lineColor: '#666',
+                },
+                data: {
+                    "data": {
+                        "text": "产品开发流程",
+                        "expand": true,
+                        "children": [
+                            {
+                                "text": "需求分析",
+                                "expand": true,
+                                "children": [
+                                    {
+                                        "text": "用户调研",
+                                        "expand": true,
+                                        "children": [
+                                            { "text": "问卷调查" },
+                                            { "text": "用户访谈" },
+                                            { "text": "竞品分析" }
+                                        ]
+                                    },
+                                    {
+                                        "text": "需求文档",
+                                        "expand": true,
+                                        "children": [
+                                            { "text": "用户故事" },
+                                            { "text": "功能列表" },
+                                            { "text": "优先级排序" }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "text": "设计阶段",
+                                "expand": true,
+                                "children": [
+                                    {
+                                        "text": "UI设计",
+                                        "expand": true,
+                                        "children": [
+                                            { "text": "线框图" },
+                                            { "text": "视觉设计" },
+                                            { "text": "交互原型" }
+                                        ]
+                                    },
+                                    {
+                                        "text": "技术设计",
+                                        "expand": true,
+                                        "children": [
+                                            { "text": "架构设计" },
+                                            { "text": "数据库设计" },
+                                            { "text": "API设计" }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "text": "开发阶段",
+                                "expand": true,
+                                "children": [
+                                    { "text": "前端开发" },
+                                    { "text": "后端开发" },
+                                    { "text": "单元测试" },
+                                    { "text": "集成测试" }
+                                ]
+                            },
+                            {
+                                "text": "测试阶段",
+                                "expand": true,
+                                "children": [
+                                    { "text": "功能测试" },
+                                    { "text": "性能测试" },
+                                    { "text": "兼容性测试" },
+                                    { "text": "安全测试" }
+                                ]
+                            },
+                            {
+                                "text": "发布阶段",
+                                "expand": true,
+                                "children": [
+                                    { "text": "部署上线" },
+                                    { "text": "用户培训" },
+                                    { "text": "数据监控" }
+                                ]
+                            },
+                            {
+                                "text": "维护阶段",
+                                "expand": true,
+                                "children": [
+                                    { "text": "Bug修复" },
+                                    { "text": "性能优化" },
+                                    { "text": "功能迭代" }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                layout: {
+                    name: 'mindMap',
+                    options: {
+                        hGap: 100,
+                        vGap: 30
+                    }
+                },
+                view: {
+                    zoomTo: 0.8
+                },
+                enableFreeDrag: true,
+                watermark: {
+                    enable: true,
+                    text: 'Simple Mind Map 演示',
+                    opacity: 0.1,
+                    fontSize: 20
+                }
+            });
+
+            // 添加子节点
+            document.getElementById('add-child').addEventListener('click', function() {
+                const activeNode = mindMap.renderer.activeNodeList[0];
+                if (!activeNode) {
+                    alert('请先选择一个节点');
+                    return;
+                }
+                
+                mindMap.addChild(activeNode.nodeData.data, {
+                    text: '新子节点',
+                    expand: true
+                });
+            });
+
+            // 添加同级节点
+            document.getElementById('add-sibling').addEventListener('click', function() {
+                const activeNode = mindMap.renderer.activeNodeList[0];
+                if (!activeNode) {
+                    alert('请先选择一个节点');
+                    return;
+                }
+                
+                if (activeNode.nodeData.isRoot) {
+                    alert('根节点不能添加同级节点');
+                    return;
+                }
+                
+                mindMap.insertSibling(activeNode.nodeData.data, {
+                    text: '新同级节点',
+                    expand: true
+                });
+            });
+
+            // 删除节点
+            document.getElementById('remove-node').addEventListener('click', function() {
+                const activeNode = mindMap.renderer.activeNodeList[0];
+                if (!activeNode) {
+                    alert('请先选择一个节点');
+                    return;
+                }
+                
+                if (activeNode.nodeData.isRoot) {
+                    alert('不能删除根节点');
+                    return;
+                }
+                
+                mindMap.removeNode(activeNode.nodeData.data);
+            });
+
+            // 主题切换
+            document.getElementById('theme-select').addEventListener('change', function() {
+                const theme = this.value;
+                mindMap.setTheme(theme);
+            });
+
+            // 布局切换
+            document.getElementById('layout-select').addEventListener('change', function() {
+                const layout = this.value;
+                mindMap.setLayout(layout);
+            });
+
+            // 导出PNG
+            document.getElementById('export-img').addEventListener('click', function() {
+                mindMap.export.png().then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = '思维导图.png';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
+            });
+
+            // 导出SVG
+            document.getElementById('export-svg').addEventListener('click', function() {
+                mindMap.export.svg().then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = '思维导图.svg';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

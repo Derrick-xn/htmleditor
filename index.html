@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web编辑器技术演示导航</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        .category {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+        .category-title {
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+        }
+        .category-title i {
+            font-size: 1.5rem;
+            margin-right: 15px;
+            color: #3498db;
+        }
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .demo-card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .demo-image {
+            height: 180px;
+            background-color: #ecf0f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .demo-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .demo-content {
+            padding: 20px;
+        }
+        .demo-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .demo-desc {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        .demo-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .tag {
+            background-color: #e0f7fa;
+            color: #00838f;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        .demo-link {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .demo-link:hover {
+            background-color: #2980b9;
+        }
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+            color: #7f8c8d;
+        }
+        @media (max-width: 768px) {
+            .demo-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Web编辑器技术演示</h1>
+            <p class="subtitle">适用于Web环境的开源HTML编辑器与工具集合</p>
+        </header>
+        
+        <section class="category">
+            <h2 class="category-title"><i class="fas fa-sitemap"></i> 思维导图编辑工具</h2>
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <div class="demo-image">
+                        <img src="https://jsmind.sinaapp.com/static/screenshots/jsmind.png" alt="jsMind截图">
+                    </div>
+                    <div class="demo-content">
+                        <h3 class="demo-title">jsMind</h3>
+                        <p class="demo-desc">基于HTML5 Canvas/SVG绘制的思维导图工具，支持动态节点操作与跨平台兼容。</p>
+                        <div class="demo-tags">
+                            <span class="tag">轻量级</span>
+                            <span class="tag">JSON导入导出</span>
+                            <span class="tag">主题切换</span>
+                        </div>
+                        <a href="jsmind_demo.html" class="demo-link">查看演示</a>
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <div class="demo-image">
+                        <img src="https://github.com/wanglin2/mind-map/raw/main/simple-mind-map.png" alt="simple-mind-map截图">
+                    </div>
+                    <div class="demo-content">
+                        <h3 class="demo-title">simple-mind-map</h3>
+                        <p class="demo-desc">框架无关的思维导图，支持六种结构、节点富文本和多种导出格式。</p>
+                        <div class="demo-tags">
+                            <span class="tag">插件化架构</span>
+                            <span class="tag">多种结构</span>
+                            <span class="tag">导出PNG/SVG/PDF</span>
+                        </div>
+                        <a href="simple-mind-map_demo.html" class="demo-link">查看演示</a>
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <div class="demo-image">
+                        <img src="https://camo.githubusercontent.com/c9d8bf8e9cf5f5ed27b0ee0e1f6a48f29646c9a5/68747470733a2f2f692e6c6f6c692e6e65742f323031392f30392f30342f756e7a4f53674d7351556f4c4e52702e706e67" alt="RMind截图">
+                    </div>
+                    <div class="demo-content">
+                        <h3 class="demo-title">RMind</h3>
+                        <p class="demo-desc">基于React Hooks + Flex布局的思维导图，支持键盘快捷键和多种格式导入导出。</p>
+                        <div class="demo-tags">
+                            <span class="tag">React组件</span>
+                            <span class="tag">键盘快捷键</span>
+                            <span class="tag">多格式支持</span>
+                        </div>
+                        <a href="rmind_demo.html" class="demo-link">查看演示</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="category">
+            <h2 class="category-title"><i class="fas fa-desktop"></i> 类PPT页面编辑框架</h2>
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <div class="demo-image">
+                        <img src="https://revealjs.com/images/share-card.png" alt="reveal.js截图">
+                    </div>
+                    <div class="demo-content">
+                        <h3 class="demo-title">reveal.js</h3>
+                        <p class="demo-desc">功能强大的HTML幻灯片框架，支持嵌套幻灯片、Markdown和数学公式。</p>
+                        <div class="demo-tags">
+                            <span class="tag">网页版PPT</span>
+                            <span class="tag">LaTeX支持</span>
+                            <span class="tag">代码高亮</span>
+                        </div>
+                        <a href="revealjs_demo.html" class="demo-link">查看演示</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="category">
+            <h2 class="category-title"><i class="fas fa-edit"></i> 通用HTML内容编辑器</h2>
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <div class="demo-image">
+                        <img src="http://kindeditor.net/demo/demo.png" alt="KindEditor截图">
+                    </div>
+                    <div class="demo-content">
+                        <h3 class="demo-title">KindEditor</h3>
+                        <p class="demo-desc">轻量级所见即所得HTML编辑器，兼容主流浏览器，支持多种媒体文件。</p>
+                        <div class="demo-tags">
+                            <span class="tag">轻量级</span>
+                            <span class="tag">多浏览器兼容</span>
+                            <span class="tag">媒体支持</span>
+                        </div>
+                        <a href="kindeditor_demo.html" class="demo-link">查看演示</a>
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <div class="demo-image">
+                        <img src="https://raw.githubusercontent.com/GetmeUK/ContentTools/master/screenshot.jpeg" alt="ContentTools截图">
+                    </div>
+                    <div class="demo-content">
+                        <h3 class="demo-title">ContentTools</h3>
+                        <p class="demo-desc">无框架依赖的区块化编辑器，类似Medium的编辑体验，体积小巧。</p>
+                        <div class="demo-tags">
+                            <span class="tag">区块化编辑</span>
+                            <span class="tag">无依赖</span>
+                            <span class="tag">仅49KB</span>
+                        </div>
+                        <a href="contenttools_demo.html" class="demo-link">查看演示</a>
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <div class="demo-image">
+                        <img src="https://grapesjs.com/img/grapesjs-front-page-m.jpg" alt="GrapesJS截图">
+                    </div>
+                    <div class="demo-content">
+                        <h3 class="demo-title">GrapesJS</h3>
+                        <p class="demo-desc">可视化网站模板构建器，支持拖拽组件、样式管理和响应式设计。</p>
+                        <div class="demo-tags">
+                            <span class="tag">可视化构建</span>
+                            <span class="tag">响应式设计</span>
+                            <span class="tag">多格式代码生成</span>
+                        </div>
+                        <a href="grapesjs_demo.html" class="demo-link">查看演示</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>© 2023 Web编辑器技术演示 | 所有展示工具均为开源项目</p>
+        </footer>
+    </div>
+</body>
+</html> 

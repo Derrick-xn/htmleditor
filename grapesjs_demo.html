@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrapesJS 可视化页面构建器演示</title>
+    
+    <!-- GrapesJS CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css">
+    <!-- GrapesJS 预设插件 CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .btn-view {
+            background-color: #2196F3;
+        }
+        .btn-view:hover {
+            background-color: #0b7dda;
+        }
+        .btn-clear {
+            background-color: #f44336;
+        }
+        .btn-clear:hover {
+            background-color: #d32f2f;
+        }
+        #gjs {
+            height: calc(100vh - 50px);
+            overflow: hidden;
+        }
+        /* 自定义GrapesJS样式 */
+        .gjs-one-bg {
+            background-color: #2c3e50;
+        }
+        .gjs-two-color {
+            color: #ecf0f1;
+        }
+        .gjs-four-color {
+            color: #4CAF50;
+        }
+        .gjs-four-color-h:hover {
+            color: #45a049;
+        }
+        /* 弹出层样式 */
+        #code-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .code-container {
+            width: 80%;
+            height: 70%;
+            background-color: white;
+            border-radius: 5px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #f1f1f1;
+            border-bottom: 1px solid #ddd;
+        }
+        .code-tabs {
+            display: flex;
+            gap: 10px;
+        }
+        .code-tab {
+            padding: 5px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .code-tab.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .code-content {
+            flex-grow: 1;
+            overflow: auto;
+            padding: 20px;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .close-btn {
+            background-color: transparent;
+            border: none;
+            color: #333;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        /* 响应式设计工具栏 */
+        .device-manager {
+            display: flex;
+            gap: 10px;
+            margin-right: 20px;
+        }
+        .device-btn {
+            background-color: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            opacity: 0.7;
+        }
+        .device-btn:hover,
+        .device-btn.active {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>GrapesJS 可视化页面构建器</h1>
+        <div class="controls">
+            <div class="device-manager">
+                <button class="device-btn active" data-device="desktop" title="桌面视图">
+                    <i class="fa fa-desktop"></i>
+                </button>
+                <button class="device-btn" data-device="tablet" title="平板视图">
+                    <i class="fa fa-tablet"></i>
+                </button>
+                <button class="device-btn" data-device="mobile" title="手机视图">
+                    <i class="fa fa-mobile"></i>
+                </button>
+            </div>
+            <button id="view-code" class="btn btn-view">查看代码</button>
+            <button id="clear-canvas" class="btn btn-clear">清空画布</button>
+        </div>
+    </div>
+    
+    <div id="gjs"></div>
+    
+    <div id="code-viewer">
+        <div class="code-container">
+            <div class="code-header">
+                <div class="code-tabs">
+                    <div class="code-tab active" data-tab="html">HTML</div>
+                    <div class="code-tab" data-tab="css">CSS</div>
+                    <div class="code-tab" data-tab="full">完整代码</div>
+                </div>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="code-content">
+                <pre id="code-display"></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <!-- GrapesJS JS -->
+    <script src="https://unpkg.com/grapesjs"></script>
+    <!-- GrapesJS 预设插件 -->
+    <script src="https://unpkg.com/grapesjs-preset-webpage"></script>
+    <script src="https://unpkg.com/grapesjs-blocks-basic"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化 GrapesJS 编辑器
+            var editor = grapesjs.init({
+                container: '#gjs',
+                height: '100%',
+                fromElement: false,
+                storageManager: false,
+                panels: { defaults: [] },
+                deviceManager: {
+                    devices: [
+                        {
+                            id: 'desktop',
+                            name: '桌面',
+                            width: '',
+                        },
+                        {
+                            id: 'tablet',
+                            name: '平板',
+                            width: '768px',
+                            widthMedia: '992px',
+                        },
+                        {
+                            id: 'mobile',
+                            name: '手机',
+                            width: '375px',
+                            widthMedia: '576px',
+                        }
+                    ]
+                },
+                styleManager: {
+                    sectors: [
+                        {
+                            name: '尺寸',
+                            open: false,
+                            properties: [
+                                { name: 'width', property: 'width' },
+                                { name: 'height', property: 'height' },
+                                { name: 'max-width', property: 'max-width' },
+                                { name: 'min-height', property: 'min-height' },
+                                { name: 'margin', property: 'margin' },
+                                { name: 'padding', property: 'padding' }
+                            ]
+                        },
+                        {
+                            name: '排版',
+                            open: false,
+                            properties: [
+                                { name: 'font-family', property: 'font-family' },
+                                { name: 'font-size', property: 'font-size' },
+                                { name: 'font-weight', property: 'font-weight' },
+                                { name: 'letter-spacing', property: 'letter-spacing' },
+                                { name: 'color', property: 'color' },
+                                { name: 'line-height', property: 'line-height' },
+                                { name: 'text-align', property: 'text-align' },
+                                { name: 'text-decoration', property: 'text-decoration' },
+                                { name: 'text-shadow', property: 'text-shadow' }
+                            ]
+                        },
+                        {
+                            name: '装饰',
+                            open: false,
+                            properties: [
+                                { name: 'background-color', property: 'background-color' },
+                                { name: 'background', property: 'background' },
+                                { name: 'border-radius', property: 'border-radius' },
+                                { name: 'border', property: 'border' },
+                                { name: 'box-shadow', property: 'box-shadow' },
+                                { name: 'opacity', property: 'opacity' }
+                            ]
+                        },
+                        {
+                            name: '布局',
+                            open: false,
+                            properties: [
+                                { name: 'display', property: 'display' },
+                                { name: 'position', property: 'position' },
+                                { name: 'top', property: 'top' },
+                                { name: 'right', property: 'right' },
+                                { name: 'bottom', property: 'bottom' },
+                                { name: 'left', property: 'left' },
+                                { name: 'flex-direction', property: 'flex-direction' },
+                                { name: 'flex-wrap', property: 'flex-wrap' },
+                                { name: 'justify-content', property: 'justify-content' },
+                                { name: 'align-items', property: 'align-items' },
+                                { name: 'align-content', property: 'align-content' },
+                                { name: 'order', property: 'order' },
+                                { name: 'flex-basis', property: 'flex-basis' },
+                                { name: 'flex-grow', property: 'flex-grow' },
+                                { name: 'flex-shrink', property: 'flex-shrink' }
+                            ]
+                        }
+                    ]
+                },
+                plugins: [
+                    'gjs-preset-webpage',
+                    'gjs-blocks-basic'
+                ],
+                pluginsOpts: {
+                    'gjs-preset-webpage': {
+                        modalImportTitle: '导入模板',
+                        modalImportLabel: '粘贴您的HTML/CSS代码',
+                        modalImportContent: '',
+                        importViewerOptions: {},
+                        textCleanCanvas: '确定要清空画布吗？'
+                    },
+                    'gjs-blocks-basic': {}
+                },
+                canvas: {
+                    styles: [
+                        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css',
+                        'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css'
+                    ],
+                    scripts: [
+                        'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'
+                    ]
+                }
+            });
+
+            // 添加示例内容
+            editor.setComponents(`
+                <div class="container py-5">
+                    <header class="text-center mb-5">
+                        <h1>企业官网示例</h1>
+                        <p class="lead">使用GrapesJS构建的响应式网站模板</p>
+                    </header>
+                    
+                    <section class="row mb-5">
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-rocket fa-3x text-primary mb-3"></i>
+                                    <h3 class="card-title">快速部署</h3>
+                                    <p class="card-text">使用我们的服务，您可以在几分钟内完成网站部署，无需复杂配置。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                                    <h3 class="card-title">安全可靠</h3>
+                                    <p class="card-text">我们提供全方位的安全保障，确保您的数据和业务始终受到保护。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-headset fa-3x text-primary mb-3"></i>
+                                    <h3 class="card-title">全天候支持</h3>
+                                    <p class="card-text">我们的技术团队随时为您提供专业支持，解决您在使用过程中遇到的问题。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section class="row align-items-center mb-5">
+                        <div class="col-lg-6 mb-4 mb-lg-0">
+                            <img src="https://via.placeholder.com/600x400/09f/fff.png" alt="产品展示" class="img-fluid rounded">
+                        </div>
+                        <div class="col-lg-6">
+                            <h2>关于我们的产品</h2>
+                            <p class="lead">我们提供创新的解决方案，帮助企业提升效率。</p>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisi vel consectetur interdum, nisl nisi consectetur purus, eget porttitor nisl nisl sit amet magna. Nulla facilisi.</p>
+                            <button class="btn btn-primary">了解更多</button>
+                        </div>
+                    </section>
+                    
+                    <section class="text-center mb-5">
+                        <h2 class="mb-4">我们的客户</h2>
+                        <div class="row">
+                            <div class="col-md-2 col-4 mb-4">
+                                <img src="https://via.placeholder.com/150/ddd/555?text=Logo1" alt="客户Logo" class="img-fluid">
+                            </div>
+                            <div class="col-md-2 col-4 mb-4">
+                                <img src="https://via.placeholder.com/150/ddd/555?text=Logo2" alt="客户Logo" class="img-fluid">
+                            </div>
+                            <div class="col-md-2 col-4 mb-4">
+                                <img src="https://via.placeholder.com/150/ddd/555?text=Logo3" alt="客户Logo" class="img-fluid">
+                            </div>
+                            <div class="col-md-2 col-4 mb-4">
+                                <img src="https://via.placeholder.com/150/ddd/555?text=Logo4" alt="客户Logo" class="img-fluid">
+                            </div>
+                            <div class="col-md-2 col-4 mb-4">
+                                <img src="https://via.placeholder.com/150/ddd/555?text=Logo5" alt="客户Logo" class="img-fluid">
+                            </div>
+                            <div class="col-md-2 col-4 mb-4">
+                                <img src="https://via.placeholder.com/150/ddd/555?text=Logo6" alt="客户Logo" class="img-fluid">
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <footer class="text-center py-4 bg-light mt-5">
+                        <p>&copy; 2023 示例公司. 保留所有权利.</p>
+                        <div class="d-flex justify-content-center">
+                            <a href="#" class="mx-2"><i class="fab fa-facebook"></i></a>
+                            <a href="#" class="mx-2"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="mx-2"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="mx-2"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </footer>
+                </div>
+            `);
+
+            // 添加自定义CSS
+            editor.setStyle(`
+                body {
+                    font-family: 'Arial', sans-serif;
+                    color: #333;
+                    line-height: 1.6;
+                }
+                
+                .card {
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                    border: none;
+                    border-radius: 10px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+                }
+                
+                .card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+                }
+                
+                .text-primary {
+                    color: #4CAF50 !important;
+                }
+                
+                .btn-primary {
+                    background-color: #4CAF50;
+                    border-color: #4CAF50;
+                    padding: 10px 20px;
+                    border-radius: 30px;
+                }
+                
+                .btn-primary:hover {
+                    background-color: #45a049;
+                    border-color: #45a049;
+                }
+                
+                footer a {
+                    color: #666;
+                    text-decoration: none;
+                }
+                
+                footer a:hover {
+                    color: #4CAF50;
+                }
+            `);
+
+            // 响应式设计视图切换
+            var deviceButtons = document.querySelectorAll('.device-btn');
+            deviceButtons.forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var device = this.getAttribute('data-device');
+                    editor.setDevice(device);
+                    
+                    // 更新按钮状态
+                    deviceButtons.forEach(function(el) {
+                        el.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
+            });
+
+            // 查看代码按钮
+            document.getElementById('view-code').addEventListener('click', function() {
+                var htmlCode = editor.getHtml();
+                var cssCode = editor.getCss();
+                var fullCode = '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>GrapesJS 生成的页面</title>\n    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">\n    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">\n    <style>\n' + cssCode + '\n    </style>\n</head>\n<body>\n' + htmlCode + '\n    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>\n</body>\n</html>';
+                
+                document.getElementById('code-display').textContent = htmlCode;
+                document.getElementById('code-viewer').style.display = 'flex';
+                
+                // 代码标签切换
+                var activeTab = 'html';
+                var codeTabs = document.querySelectorAll('.code-tab');
+                codeTabs.forEach(function(tab) {
+                    tab.addEventListener('click', function() {
+                        var tabId = this.getAttribute('data-tab');
+                        
+                        // 更新标签状态
+                        codeTabs.forEach(function(el) {
+                            el.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                        
+                        // 更新代码显示
+                        if (tabId === 'html') {
+                            document.getElementById('code-display').textContent = htmlCode;
+                        } else if (tabId === 'css') {
+                            document.getElementById('code-display').textContent = cssCode;
+                        } else if (tabId === 'full') {
+                            document.getElementById('code-display').textContent = fullCode;
+                        }
+                    });
+                });
+            });
+            
+            // 关闭代码查看器
+            document.querySelector('.close-btn').addEventListener('click', function() {
+                document.getElementById('code-viewer').style.display = 'none';
+            });
+            
+            // 清空画布按钮
+            document.getElementById('clear-canvas').addEventListener('click', function() {
+                if (confirm('确定要清空画布吗？')) {
+                    editor.runCommand('core:canvas-clear');
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

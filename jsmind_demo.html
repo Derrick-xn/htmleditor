@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jsMind 思维导图演示</title>
+    <link rel="stylesheet" href="lib/jsmind/jsmind.min.css">
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #jsmind_container {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ccc;
+            margin-top: 20px;
+        }
+        .theme-select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>jsMind 思维导图演示</h1>
+        
+        <div class="controls">
+            <button id="add-node">添加子节点</button>
+            <button id="remove-node">删除选中节点</button>
+            <button id="expand-all">全部展开</button>
+            <button id="collapse-all">全部收起</button>
+            <select id="theme-select" class="theme-select">
+                <option value="primary">默认主题</option>
+                <option value="warning">警告主题</option>
+                <option value="danger">危险主题</option>
+                <option value="success">成功主题</option>
+                <option value="info">信息主题</option>
+            </select>
+        </div>
+        
+        <div id="jsmind_container"></div>
+    </div>
+
+    <script src="lib/jsmind/jsmind.min.js"></script>
+    <script src="lib/jsmind/jsmind.draggable.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始数据
+            var mind_data = {
+                "meta": {
+                    "name": "Web开发技术栈",
+                    "author": "演示用户",
+                    "version": "1.0"
+                },
+                "format": "node_array",
+                "data": [
+                    {"id": "root", "isroot": true, "topic": "Web开发技术栈"},
+                    
+                    {"id": "frontend", "parentid": "root", "topic": "前端技术", "direction": "right"},
+                    {"id": "html", "parentid": "frontend", "topic": "HTML5"},
+                    {"id": "css", "parentid": "frontend", "topic": "CSS3"},
+                    {"id": "js", "parentid": "frontend", "topic": "JavaScript"},
+                    {"id": "framework", "parentid": "frontend", "topic": "前端框架"},
+                    {"id": "react", "parentid": "framework", "topic": "React"},
+                    {"id": "vue", "parentid": "framework", "topic": "Vue.js"},
+                    {"id": "angular", "parentid": "framework", "topic": "Angular"},
+                    
+                    {"id": "backend", "parentid": "root", "topic": "后端技术", "direction": "left"},
+                    {"id": "nodejs", "parentid": "backend", "topic": "Node.js"},
+                    {"id": "python", "parentid": "backend", "topic": "Python"},
+                    {"id": "java", "parentid": "backend", "topic": "Java"},
+                    {"id": "database", "parentid": "backend", "topic": "数据库"},
+                    {"id": "sql", "parentid": "database", "topic": "SQL数据库"},
+                    {"id": "nosql", "parentid": "database", "topic": "NoSQL数据库"},
+                    
+                    {"id": "tools", "parentid": "root", "topic": "开发工具", "direction": "right"},
+                    {"id": "git", "parentid": "tools", "topic": "Git版本控制"},
+                    {"id": "docker", "parentid": "tools", "topic": "Docker容器化"},
+                    {"id": "ide", "parentid": "tools", "topic": "IDE工具"}
+                ]
+            };
+
+            // 配置选项
+            var options = {
+                container: 'jsmind_container',
+                editable: true,
+                theme: 'primary',
+                mode: 'full',
+                view: {
+                    hmargin: 100,
+                    vmargin: 50,
+                    line_width: 2,
+                    line_color: '#555'
+                },
+                layout: {
+                    hspace: 30,
+                    vspace: 20,
+                    pspace: 13
+                }
+            };
+
+            // 初始化思维导图
+            var jm = new jsMind(options);
+            jm.show(mind_data);
+
+            // 添加子节点
+            document.getElementById('add-node').addEventListener('click', function() {
+                var selected_node = jm.get_selected_node();
+                if (!selected_node) {
+                    alert('请先选择一个节点');
+                    return;
+                }
+                
+                var node_id = 'node_' + (new Date().getTime());
+                var node_topic = '新节点 ' + node_id.substr(-6);
+                jm.add_node(selected_node, node_id, node_topic);
+            });
+
+            // 删除选中节点
+            document.getElementById('remove-node').addEventListener('click', function() {
+                var selected_node = jm.get_selected_node();
+                if (!selected_node) {
+                    alert('请先选择一个节点');
+                    return;
+                }
+                
+                if (selected_node.isroot) {
+                    alert('不能删除根节点');
+                    return;
+                }
+                
+                jm.remove_node(selected_node);
+            });
+
+            // 全部展开
+            document.getElementById('expand-all').addEventListener('click', function() {
+                jm.expand_all();
+            });
+
+            // 全部收起
+            document.getElementById('collapse-all').addEventListener('click', function() {
+                jm.collapse_all();
+            });
+
+            // 主题切换
+            document.getElementById('theme-select').addEventListener('change', function() {
+                var theme = this.value;
+                jm.set_theme(theme);
+            });
+        });
+    </script>
+</body>
+</html> 
